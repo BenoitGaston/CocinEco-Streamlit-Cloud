@@ -275,6 +275,10 @@ def initialize_session_state():
         st.session_state["bot_started"] = False  # Bot running state
     if "show_user_info" not in st.session_state:
         st.session_state["show_user_info"] = True  # Toggle user info visibility
+    if st.session_state.running_in_cloud:
+        st.session_state.agent_profile = all_in_one_agent_Chat_GPT
+    else:
+        st.session_state.agent_profile = all_in_one_agent
     
     if not st.session_state.bot_started:
         st.session_state.llm = None
@@ -291,10 +295,7 @@ def initialize_session_state():
         st.session_state.csv_content = None
         st.session_state.file_buffer = None
         st.session_state.show_meal_plan = False
-        if st.session_state.running_in_cloud:
-            st.session_state.agent_profile = all_in_one_agent_Chat_GPT
-        else:
-            st.session_state.agent_profile = all_in_one_agent
+
 
 
 def cocineco_is_ready_to_start():
@@ -321,7 +322,7 @@ def initialize_cocineco_bot():
         + "you with personalized nutrition advice. Let's get started! ok?"
     )
 
-    # st.chat_message("assistant").write(chat_message)
+
 
     st.session_state.messages.append({"role": "assistant", "content": chat_message})
 
@@ -362,19 +363,16 @@ def run_conversation():
                 logger.info("Context : %s", context)
                 st.session_state.messages.append({"role": "assistant", "content": answer})
 
-                answer = "Your customized Meal Plan, blending sustainability, nutrition, and your  health needs is now available under the links below."
+                #answer = "Your customized Meal Plan, blending sustainability, nutrition, and your  health needs is now available under the links below."
                 # Show the answer text in the app
-                st.session_state.messages.append({"role": "assistant", "content": answer})
-                st.chat_message("assistant").write(answer)
+                #st.session_state.messages.append({"role": "assistant", "content": answer.split("```")[0] + answer.split("```")[2]})
+                st.chat_message("assistant").write(answer.split("```")[0] + answer.split("```")[2])
 
                 answer = "Is there anything you would like me to correct in this plan?"
                 # Show the answer text in the app
                 st.session_state.messages.append({"role": "assistant", "content": answer})
                 st.chat_message("assistant").write(answer)
 
-
-                st.chat_message("assistant").write(chat_message)
-                st.session_state.messages.append({"role": "assistant", "content": chat_message})
 
             else:
                 st.session_state.messages.append({"role": "assistant", "content": answer})
